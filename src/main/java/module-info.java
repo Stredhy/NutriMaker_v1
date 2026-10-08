@@ -5,7 +5,7 @@ module com.javafx.nutrimaker {
     requires org.kordamp.bootstrapfx.core;
     requires java.base;
 
-    requires okhttp3;
+    requires mysql.connector.j;
     requires com.google.gson;
 
     requires kernel;
@@ -16,7 +16,6 @@ module com.javafx.nutrimaker {
     opens com.javafx.nutrimaker.models to javafx.base, com.google.gson;
 
     requires java.sql;
-    requires annotations;
     requires jbcrypt;
     opens com.javafx.nutrimaker to javafx.fxml;
     exports com.javafx.nutrimaker;
