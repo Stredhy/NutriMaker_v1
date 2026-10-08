@@ -191,8 +191,8 @@ public class MealRepository {
                                 mealsPerDay
                         );
 
-                String[] tiempos =
-                        DistribuidorDeCalorias.obtenerTiempos(
+                List<LocalTime> tiempos =
+                        DistribuidorDeCalorias.obtenerHoras(
                                 mealsPerDay
                         );
 
@@ -210,8 +210,7 @@ public class MealRepository {
                             plan.get(i);
 
                     String mealTime =
-                            tiempos[i];
-
+                            tiempos.get(i).toString();
                     int remaining =
                             (int) scheduled.getCaloriasAsignadas();
 
