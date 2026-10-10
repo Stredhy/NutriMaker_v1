@@ -9,18 +9,18 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="147.0" prefWidth="305.0" style="-fx-background-color: #101d4f;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.javafx.nutrimaker.DialogController">
+<AnchorPane prefHeight="176.0" prefWidth="410.0" style="-fx-background-color: #101d4f;" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.javafx.nutrimaker.DialogController">
    <children>
-      <HBox alignment="CENTER" prefHeight="55.0" prefWidth="305.0">
+      <HBox alignment="CENTER" prefHeight="99.0" prefWidth="410.0">
          <children>
-            <Label fx:id="warningLabel" alignment="CENTER" contentDisplay="CENTER" text="Advertencia" textFill="WHITE">
-               <font>
-                  <Font size="16.0" />
-               </font>
-            </Label>
+            <Label fx:id="warningLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="78.0" prefWidth="383.0" text="Advertencia" textFill="WHITE" wrapText="true">
+            <font>
+               <Font size="16.0" />
+            </font>
+         </Label>   
          </children>
       </HBox>
-      <Button fx:id="closeButton" layoutX="120.0" layoutY="89.0" mnemonicParsing="false" onAction="#closeWindow" style="-fx-background-color: #0c7774;" text="Aceptar" textFill="WHITE">
+      <Button fx:id="closeButton" layoutX="171.0" layoutY="99.0" mnemonicParsing="false" onAction="#closeWindow" style="-fx-background-color: #0c7774;" text="Aceptar" textFill="WHITE">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>

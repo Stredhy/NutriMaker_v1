@@ -44,18 +44,29 @@ public class PatientFormController implements Initializable {
         userEmail = uE;
     }
     
+
+    
+    
+    
     @FXML
     private void save(ActionEvent event) throws IOException {
         if (checkInputs()) {
             int age = Integer.parseInt(ageTextField.getText());
-            double weight = Double.parseDouble(weightTextField.getText()), height = Double.parseDouble(heightTextField.getText());
-            try {
-                patientId = new PatientRepository().createPatientAndGetId(nameTextField.getText(), age, weight, height);
-            } catch (IOException e) {
-                dialog("No se pudo guardar el paciente. Revisa la conexión a MySQL.");
-                return;
-            }
-            createDiet(event);
+            double weight = Double.parseDouble(weightTextField.getText());
+            double height = Double.parseDouble(heightTextField.getText());
+
+            // Crear el paciente y recuperar su ID real
+            int patientId = new PatientRepository().createPatientAndGetId(
+                    nameTextField.getText(),
+                    age,
+                    weight,
+                    height
+            );
+
+            System.out.println("Paciente creado con ID: " + patientId);
+
+            // Abrir la ventana de creación de dieta pasando el ID
+            createDiet(event, patientId);
         }
     }
     
@@ -89,9 +100,20 @@ public class PatientFormController implements Initializable {
         return true;
     }
     
-    private void createDiet(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("CreateDiet.fxml"));
+    private void createDiet(ActionEvent event, int patientId) throws IOException {
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("CreateDiet.fxml")
+        );
+
         Parent root = loader.load();
+
+        // Pasar el ID del paciente al controlador de la dieta
+        CreateDietController controller = loader.getController();
+        controller.setPatientId(patientId);
+
+        Stage stage = (Stage) ((Node) event.getSource())
+                .getScene().getWindow();
+
         ((CreateDietController) loader.getController()).setPatientId(patientId);
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setScene(new Scene(root));

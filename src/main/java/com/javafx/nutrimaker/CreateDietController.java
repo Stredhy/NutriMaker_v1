@@ -39,6 +39,7 @@ import javafx.stage.StageStyle;
 public class CreateDietController implements Initializable {
 
     private String userEmail;
+    
     private int patientId;
 
     public void setPatientId(int patientId) { this.patientId = patientId; }

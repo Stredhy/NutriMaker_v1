@@ -75,6 +75,26 @@ public class DatabaseClient {
             }
         }
     }
+    /**
+     * El esquema entregado no marca los identificadores como AUTO_INCREMENT.
+     * Solo se permiten combinaciones de tabla/columna conocidas para evitar SQL dinámico arbitrario.
+     * Se usa dentro de una transacción antes de insertar.
+     */
+    public static int nextId(Connection c, String table, String column) throws SQLException {
+        boolean allowed =
+                ("DIETA".equals(table) && "ID_DIETA".equals(column)) ||
+                ("COMIDA".equals(table) && "ID_COMIDA".equals(column)) ||
+                ("PACIENTE".equals(table) && "ID_PACIENTE".equals(column)) ||
+                ("USUARIO".equals(table) && "ID_USUARIO".equals(column));
+        if (!allowed) throw new SQLException("Tabla/columna no permitida para generar ID");
+        try (PreparedStatement s = c.prepareStatement(
+                "SELECT COALESCE(MAX(" + column + "), 0) + 1 FROM " + table);
+             ResultSet rs = s.executeQuery()) {
+            if (!rs.next()) throw new SQLException("No se pudo calcular el siguiente ID para " + table);
+            return rs.getInt(1);
+        }
+    }
+
     public static String items(JsonArray rows) {
         JsonObject result = new JsonObject();
         result.add("items", rows);

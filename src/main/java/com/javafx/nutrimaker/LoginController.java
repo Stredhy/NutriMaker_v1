@@ -78,6 +78,17 @@ public class LoginController implements Initializable {
         
         //db connection
     }
+
+    public void dialog() throws IOException {
+        URL fxml = getClass().getResource("EmptyInputs.fxml");
+
+        if (fxml == null) {
+            throw new IOException(
+                "No se encontró EmptyInputs.fxml. Revisa su ubicación en resources."
+            );
+        }
+
+        Parent parent = FXMLLoader.load(fxml);
     
     public void dialog(String warningMessage) throws IOException {
         FXMLLoader loader =new FXMLLoader(getClass().getResource("DialogInputs.fxml"));
@@ -85,6 +96,7 @@ public class LoginController implements Initializable {
         DialogController dialog = loader.getController();
         dialog.setText(warningMessage);
         Scene scene = new Scene(parent);
+
         Stage stage = new Stage();
         stage.setScene(scene);
         stage.initStyle(StageStyle.UNDECORATED);

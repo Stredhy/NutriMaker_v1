@@ -26,7 +26,6 @@ import com.itextpdf.layout.element.TabStop;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TabAlignment;
 import com.itextpdf.layout.properties.UnitValue;
-import com.itextpdf.layout.properties.VerticalAlignment;
 import com.javafx.nutrimaker.models.Diet;
 import com.javafx.nutrimaker.models.Ingredient;
 import com.javafx.nutrimaker.models.Meal;
@@ -99,7 +98,7 @@ public class PDFBuilder {
         infoPatient.add(new Tab()); 
         infoPatient.add("Edad: " + diet.getPatient().getAge());
         infoPatient.add(new Tab());
-        infoPatient.add("Estatura: " + diet.getPatient().getHeight() + " m");
+        infoPatient.add("Estatura: " + diet.getPatient().getHeight() + " cm");
         infoPatient.add(new Tab());        
         infoPatient.add("Peso: " + diet.getPatient().getWeight() + " kg");
 
@@ -142,77 +141,98 @@ public class PDFBuilder {
         String fontBoldPath = PDFBuilder.class.getResource("fonts/ComicShannsMonoNerdFont-Bold.otf").toURI().getPath();
         PdfFont fontBold = PdfFontFactory.createFont(fontBoldPath, PdfEncodings.IDENTITY_H, EmbeddingStrategy.PREFER_EMBEDDED);
         SimpleDateFormat sdf = new SimpleDateFormat("EEEE", new Locale("es", "ES"));
-        Map<String,Integer> mealsSort = new HashMap<>();
-        mealsSort.put("BREAKFAST",1);
-        mealsSort.put("SNACK",2);
-        mealsSort.put("LUNCH",3);
-        mealsSort.put("DINNER",4);
-        
-        Map<String, List<Meal>> mealsByDay = new LinkedHashMap<>();
-        
-        List<String> days = Arrays.asList("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo");
 
-        
-        for(String day : days){
+        Map<String,Integer> mealsSort = new HashMap<>();
+        mealsSort.put("BREAKFAST", 1);
+        mealsSort.put("SNACK", 2);
+        mealsSort.put("LUNCH", 3);
+        mealsSort.put("DINNER", 4);
+        // También admite los tipos si el modelo ya los entrega en español.
+        mealsSort.put("DESAYUNO", 1);
+        mealsSort.put("COLACION", 2);
+        mealsSort.put("COLACIÓN", 2);
+        mealsSort.put("COMIDA", 3);
+        mealsSort.put("CENA", 4);
+
+        List<String> days = Arrays.asList(
+            "lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"
+        );
+        Map<String, List<Meal>> mealsByDay = new LinkedHashMap<>();
+        for (String day : days) {
             mealsByDay.put(day, new ArrayList<>());
         }
-        
-        for(Meal meal : diet.getMeals()){
-            String day = sdf.format(meal.getDay()).toLowerCase();
-            if(mealsByDay.containsKey(day)){
-                mealsByDay.get(day).add(meal);
+
+        Locale spanish = new Locale("es", "ES");
+        for (Meal meal : diet.getMeals()) {
+            if (meal.getDay() == null) {
+                throw new IllegalStateException(
+                    "La comida \"" + meal.getName()
+                    + "\" (ID: " + meal.getMealBaseId()
+                    + ") no tiene un día asignado."
+                );
+            }
+
+            String day = sdf.format(meal.getDay()).toLowerCase(spanish);
+            List<Meal> dayMeals = mealsByDay.get(day);
+            if (dayMeals != null) {
+                dayMeals.add(meal);
             }
         }
-        
-        for(String day : days){
-            List<Meal> meals = mealsByDay.get(day);
-            meals.sort(Comparator.comparing(e -> mealsSort.getOrDefault(e.getMealType(), 99)));
+
+        Comparator<Meal> mealComparator = Comparator.comparing(meal ->
+            mealsSort.getOrDefault(meal.getMealType().toUpperCase(spanish), 99)
+        );
+        for (String day : days) {
+            mealsByDay.get(day).sort(mealComparator);
         }
-        
-        Table table = new Table(new float[]{1,10});
+
+        // Una sola columna: cada día ocupa una fila horizontal completa.
+        // Así se evita la columna lateral con el nombre del día girado.
+        Table table = new Table(UnitValue.createPercentArray(new float[]{1}));
         table.setWidth(UnitValue.createPercentValue(100));
-        
-        for(String day : days){
+
+        for (String day : days) {
             List<Meal> meals = mealsByDay.get(day);
-            if(meals.isEmpty()){
+            if (meals.isEmpty()) {
                 continue;
             }
-            Paragraph currentDay = new Paragraph();
-            currentDay.add(day.toUpperCase());
-            currentDay.setFontSize(12);
-            currentDay.setRotationAngle(Math.PI/2);
-            currentDay.setFont(fontBold);
-            
-            Cell dayCell = new Cell().add(currentDay);
-            dayCell.setBorderRight(new SolidBorder(1));
-            dayCell.setBorderBottom(new SolidBorder(1));
-            dayCell.setBorder(Border.NO_BORDER);
-            dayCell.setVerticalAlignment(VerticalAlignment.MIDDLE);
-            dayCell.setWidth(30);
-            dayCell.setPadding(10);
-            
-            
-            Cell mealsCell = new Cell();
-            
-            for(Meal meal : meals){
-                Paragraph type = new Paragraph(meal.getMealType()+ " \uE28D \uE2A5 \uE28D  " + meal.getName()).setFont(fontBold);
-                type.setPaddingLeft(50);
-                mealsCell.add(type);
-                
-                mealsCell.add(setIngredients(meal));
-                
-            }
-            mealsCell.setBorderBottom(new SolidBorder(1));
-            mealsCell.setBorder(Border.NO_BORDER);
-            mealsCell.setPadding(10);
-            
+
+            Paragraph dayTitle = new Paragraph(day.toUpperCase(spanish))
+                .setFont(fontBold)
+                .setFontSize(12)
+                .setMarginTop(4)
+                .setMarginBottom(5);
+            Cell dayCell = new Cell()
+                .add(dayTitle)
+                .setPaddingLeft(8)
+                .setPaddingTop(5)
+                .setPaddingBottom(3)
+                .setBorder(Border.NO_BORDER)
+                .setBorderTop(new SolidBorder(1));
             table.addCell(dayCell);
+
+            Cell mealsCell = new Cell()
+                .setPaddingLeft(12)
+                .setPaddingRight(8)
+                .setPaddingTop(2)
+                .setPaddingBottom(8)
+                .setBorder(Border.NO_BORDER);
+
+            for (Meal meal : meals) {
+                Paragraph type = new Paragraph(
+                    meal.getMealType() + "  \uE28D \uE2A5 \uE28D  " + meal.getName()
+                ).setFont(fontBold)
+                 .setMarginTop(3)
+                 .setMarginBottom(2);
+                mealsCell.add(type);
+                mealsCell.add(setIngredients(meal));
+            }
             table.addCell(mealsCell);
         }
-        
+
         return table;
     }
-    
+
     private static Paragraph setIngredients(Meal meal){
         Paragraph paragraph = new Paragraph();
         for(Ingredient ingredient : meal.getIngredients()){
