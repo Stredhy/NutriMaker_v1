@@ -1,0 +1,14 @@
+id: UTS-09
+level: UTS
+module: dietas
+name: Verificar que la edición de una dieta solo acepte cambios válidos.
+objective: Verificar que la edición de una dieta solo acepte cambios válidos.
+pre: EditDietController con repositorio simulado.
+steps:
+- 1.- Cambio válido. 2.- Sin alimento. 3.- Dieta inexistente.
+expected:
+- 1 se acepta (1 llamada); 2 y 3 se rechazan (0 llamadas).
+reqs:
+- RF-06
+tests:
+- UTS-09

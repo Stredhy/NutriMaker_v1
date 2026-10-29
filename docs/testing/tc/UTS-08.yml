@@ -1,0 +1,17 @@
+id: UTS-08
+level: UTS
+module: pacientes
+name: Verificar que altura y peso solo acepten números positivos dentro de un rango
+  razonable.
+objective: Verificar que altura y peso solo acepten números positivos dentro de un
+  rango razonable.
+pre: PatientFormController accesible desde la prueba.
+steps:
+- 1.- Capturar letras y vacío en altura y peso. 2.- Capturar 0 y negativos. 3.- Decimales
+  válidos. 4.- Valores extremos.
+expected:
+- 1, 2 y 4 se rechazan; 3 se acepta.
+reqs:
+- RF-05
+tests:
+- UTS-08

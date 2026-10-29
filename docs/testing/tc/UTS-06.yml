@@ -1,0 +1,17 @@
+id: UTS-06
+level: UTS
+module: dietas
+name: Verificar el número de comidas, el día de descanso y que el reparto de calorías
+  sume el 100%.
+objective: Verificar el número de comidas, el día de descanso y que el reparto de
+  calorías sume el 100%.
+pre: DistribuidorDeCalorias accesible desde la prueba.
+steps:
+- 1.- Validar número de comidas 2, 3, 6 y 7. 2.- Distribuir 2000 kcal en 3 comidas.
+  3.- Sumar calorías asignadas.
+expected:
+- 2 y 7 se rechazan; 3 y 6 se aceptan; la suma es 2000 (tolerancia 1 kcal).
+reqs:
+- RF-04
+tests:
+- UTS-06

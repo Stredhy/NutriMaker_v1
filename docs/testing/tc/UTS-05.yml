@@ -1,0 +1,15 @@
+id: UTS-05
+level: UTS
+module: dietas
+name: Verificar los límites del campo de calorías de la dieta.
+objective: Verificar los límites del campo de calorías de la dieta.
+pre: CreateDietController accesible desde la prueba.
+steps:
+- 1.- Validar 0, -1 y texto no numérico ("abc"). 2.- Validar 1 y 6000. 3.- Validar
+  6001.
+expected:
+- Se rechazan 0, -1, "abc" y 6001; se aceptan 1 y 6000.
+reqs:
+- RF-04
+tests:
+- UTS-05

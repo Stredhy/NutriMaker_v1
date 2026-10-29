@@ -1,0 +1,15 @@
+id: UTS-07
+level: UTS
+module: pacientes
+name: Verificar el formato y rango de la edad, y que el nombre no se deje vacío.
+objective: Verificar el formato y rango de la edad, y que el nombre no se deje vacío.
+pre: PatientFormController accesible desde la prueba.
+steps:
+- 1.- Capturar letras y vacío en edad. 2.- Capturar 0 y negativos. 3.- Capturar 30
+  y 150. 4.- Dejar nombre vacío.
+expected:
+- Se rechazan letras, vacíos, 0, negativos y 150; se acepta 30; nombre vacío se rechaza.
+reqs:
+- RF-05
+tests:
+- UTS-07
