@@ -67,6 +67,7 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+    	Session.clear();
         setFadeAndScaleAnimation(loginButton);
         setFadeAndScaleAnimation(signupButton);
         setFadeAnimation(emailTextField);
@@ -106,9 +107,8 @@ public class LoginController implements Initializable {
                 return;
             }
 
-            User.getUser().setEmail(emailTextField.getText());
-            User.getUser().setPassword(passwordTextField.getText());
-            User.getUser().setId(userId);
+            Session.start(emailTextField.getText(), new UserRepository().getIdByEmail(emailTextField.getText()));
+            
         } catch (java.io.UncheckedIOException | IllegalStateException e) {
             dialog("No fue posible conectar con el servicio. Inténtalo más tarde.");
             return;

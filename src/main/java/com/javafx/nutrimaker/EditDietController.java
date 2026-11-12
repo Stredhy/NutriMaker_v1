@@ -95,10 +95,10 @@ public class EditDietController implements Initializable {
     }
 
     public void setDietId(int id) throws IOException {
-        if (User.getUser() == null) throw new IOException("No hay sesión activa");
+    	if (!Session.isActive()) throw new IOException("No hay sesión activa");
         this.dietId = id;
         JsonObject data = JsonParser.parseString(
-            repository.getDietByIdForUser(id, User.getUser().getId())
+            repository.getDietByIdForUser(id, Session.requireUserId())
         ).getAsJsonObject();
         dietLabel.setText("Editar dieta #" + id);
         originalPatientId = data.get("patient_id").getAsInt();
@@ -195,7 +195,7 @@ public class EditDietController implements Initializable {
                 "La dieta original no cambiará. Verifica que este plan sea adecuado para el paciente.");
             Optional<ButtonType> result = confirmation.showAndWait();
             if (result.isEmpty() || result.get() != ButtonType.OK) return;
-            int newId = repository.cloneDietForPatient(dietId, User.getUser().getId(),
+            int newId = repository.cloneDietForPatient(dietId, Session.requireUserId(),
                 existingId, name, age, weight, height);
             saved = true;
             Alert done = new Alert(Alert.AlertType.INFORMATION);
@@ -236,7 +236,7 @@ public class EditDietController implements Initializable {
             // No permitir alterar la cantidad de comidas sin regenerar el plan.
             // El repositorio también valida este invariante.
             fields.put("meals_per_day", Integer.parseInt(quantity));
-            repository.updateDietForUser(dietId, User.getUser().getId(), fields);
+            repository.updateDietForUser(dietId, Session.requireUserId(), fields);
             initialRestDay = DAYS[index];
             saved = true;
             ((Stage) saveButton.getScene().getWindow()).close();

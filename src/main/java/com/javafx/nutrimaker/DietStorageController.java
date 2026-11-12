@@ -306,13 +306,13 @@ public class DietStorageController implements Initializable {
     private void refreshButtons() throws IOException{
         DietRepository dietRepo = new DietRepository();        
         prevButton.setVisible(offset > 0);        
-        nextButton.setVisible(offset < (dietRepo.getTotalDietsCount(com.javafx.nutrimaker.models.User.getUser().getId()) - LIMIT));
+        nextButton.setVisible(offset < (dietRepo.getTotalDietsCount(Session.requireUserId()) - LIMIT));
     }
     
     private void refreshTable() throws IOException{
         dietsList.clear();
         DietRepository dietRepo= new DietRepository();
-        List<DietSummary> diets = dietRepo.getDiets(offset, LIMIT, User.getUser().getId()); 
+        List<DietSummary> diets = dietRepo.getDiets(offset, LIMIT, Session.requireUserId()); 
         int numDiet=offset;
         for(DietSummary diet : diets){
             dietsList.add(new DietSummary(++numDiet,diet.getDietId(),
